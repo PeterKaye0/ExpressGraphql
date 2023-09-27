@@ -46,6 +46,13 @@ const RootQuery = new GraphQLObjectType({
     }
 });
 
+
+/* const schema:GraphQLSchema = buildSchema(`
+    type: Query{
+        hello: String
+    }
+`) */
+
 const schema:GraphQLSchema = new GraphQLSchema({query:RootQuery})
 
 app.use("/graphql", graphqlHTTP({
