@@ -8,9 +8,9 @@ const express_1 = __importDefault(require("express"));
 const express_graphql_1 = require("express-graphql");
 const app = (0, express_1.default)();
 const books = [
-    { name: 'Name of the Wind', genre: 'Fantasy', id: '1' },
-    { name: 'The Final Empire', genre: 'Fantasy', id: '2' },
-    { name: 'The Long Earth', genre: 'Sci-Fi', id: '3' },
+    { name: 'Name of the Wind', genre: 'Fantasy', id: '1', authorId: "1" },
+    { name: 'The Final Empire', genre: 'Fantasy', id: '2', authorId: "2" },
+    { name: 'The Long Earth', genre: 'Sci-Fi', id: '3', authorId: "3" },
 ];
 const authors = [
     { name: 'Patfrick Rothfuss', age: 44, id: '1' },
@@ -31,6 +31,17 @@ const BookType = new graphql_1.GraphQLObjectType({
         id: { type: graphql_1.GraphQLString },
         name: { type: graphql_1.GraphQLString },
         genre: { type: graphql_1.GraphQLString },
+        author: { type: authorType,
+            resolve(parent, args) {
+                var match = { id: '', name: '', age: 0 };
+                authors.forEach(element => {
+                    if (element.id == parent.authorId) {
+                        match = element;
+                    }
+                });
+                return match;
+            }
+        }
     })
 });
 const RootQuery = new graphql_1.GraphQLObjectType({
@@ -40,7 +51,7 @@ const RootQuery = new graphql_1.GraphQLObjectType({
             type: BookType,
             args: { id: { type: graphql_1.GraphQLString } },
             resolve(parent, args) {
-                var match = { id: '', name: '', genre: '' };
+                var match = { id: '', name: '', genre: '', authorId: '0' };
                 books.forEach(element => {
                     if (element.id === args.id) {
                         console.log(element);

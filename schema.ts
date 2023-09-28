@@ -9,7 +9,8 @@ const app: Express = express()
 interface bookint {
     name: string,
     genre: string,
-    id: string
+    id: string,
+    authorId: string
 }
 interface authorint {
     name: string,
@@ -17,9 +18,9 @@ interface authorint {
     id: string
 }
 const books: bookint[] = [
-    { name: 'Name of the Wind', genre: 'Fantasy', id: '1' },
-    { name: 'The Final Empire', genre: 'Fantasy', id: '2' },
-    { name: 'The Long Earth', genre: 'Sci-Fi', id: '3' },
+    { name: 'Name of the Wind', genre: 'Fantasy', id: '1',authorId:"1"},
+    { name: 'The Final Empire', genre: 'Fantasy', id: '2',authorId:"2" },
+    { name: 'The Long Earth', genre: 'Sci-Fi', id: '3', authorId:"3" },
 ];
 
 const authors: authorint[] = [
@@ -43,6 +44,17 @@ const BookType = new GraphQLObjectType({
         id:{type: GraphQLString},
         name:{type: GraphQLString},        
         genre:{type: GraphQLString},
+        author:{type: authorType,
+            resolve(parent,args){
+                var match:authorint={id:'',name:'',age:0};
+                authors.forEach(element => {
+                    if (element.id == parent.authorId){
+                        match = element;
+                    }
+                }) 
+                return match;
+            }   
+        }
     })
 });
 
@@ -53,7 +65,7 @@ const RootQuery = new GraphQLObjectType({
             type: BookType,
             args: {id: {type: GraphQLString}},
             resolve(parent,args){
-                var match:bookint={id:'',name:'',genre:''};
+                var match:bookint={id:'',name:'',genre:'',authorId:'0'};
                 books.forEach(element => {
                     if (element.id === args.id){
                         console.log(element);
