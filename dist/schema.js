@@ -11,20 +11,15 @@ const books = [
     { name: 'Name of the Wind', genre: 'Fantasy', id: '1', authorId: "1" },
     { name: 'The Final Empire', genre: 'Fantasy', id: '2', authorId: "2" },
     { name: 'The Long Earth', genre: 'Sci-Fi', id: '3', authorId: "3" },
+    { name: 'The Hero of Ages', genre: 'Sci-Fi', id: '4', authorId: "2" },
+    { name: 'The Colour of Magic', genre: 'Sci-Fi', id: '5', authorId: "3" },
+    { name: 'The Light Fantastic', genre: 'Sci-Fi', id: '6', authorId: "3" },
 ];
 const authors = [
     { name: 'Patfrick Rothfuss', age: 44, id: '1' },
     { name: 'Brandon Sanderson', age: 42, id: '2' },
     { name: 'Terry Pratchett', age: 66, id: '3' },
 ];
-const authorType = new graphql_1.GraphQLObjectType({
-    name: 'Author',
-    fields: () => ({
-        id: { type: graphql_1.GraphQLString },
-        name: { type: graphql_1.GraphQLString },
-        age: { type: graphql_1.GraphQLInt }
-    })
-});
 const BookType = new graphql_1.GraphQLObjectType({
     name: 'Book',
     fields: () => ({
@@ -40,6 +35,26 @@ const BookType = new graphql_1.GraphQLObjectType({
                     }
                 });
                 return match;
+            }
+        }
+    })
+});
+const authorType = new graphql_1.GraphQLObjectType({
+    name: 'Author',
+    fields: () => ({
+        id: { type: graphql_1.GraphQLString },
+        name: { type: graphql_1.GraphQLString },
+        age: { type: graphql_1.GraphQLInt },
+        books: {
+            type: (0, graphql_1.GraphQLList)(BookType),
+            resolve(parent, args) {
+                var booksByAuthor = [];
+                books.forEach(element => {
+                    if (element.authorId == parent.id) {
+                        booksByAuthor.push(element);
+                    }
+                });
+                return booksByAuthor;
             }
         }
     })

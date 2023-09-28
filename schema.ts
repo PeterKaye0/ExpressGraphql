@@ -1,4 +1,4 @@
-import graphql, {GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema,buildSchema} from 'graphql'
+import graphql, {GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema,GraphQLList, buildSchema} from 'graphql'
 import express, {Express, Request, Response} from 'express'
 import {graphqlHTTP} from 'express-graphql'
 
@@ -21,6 +21,9 @@ const books: bookint[] = [
     { name: 'Name of the Wind', genre: 'Fantasy', id: '1',authorId:"1"},
     { name: 'The Final Empire', genre: 'Fantasy', id: '2',authorId:"2" },
     { name: 'The Long Earth', genre: 'Sci-Fi', id: '3', authorId:"3" },
+    { name: 'The Hero of Ages', genre: 'Sci-Fi', id: '4', authorId:"2" },
+    { name: 'The Colour of Magic', genre: 'Sci-Fi', id: '5', authorId:"3" },
+    { name: 'The Light Fantastic', genre: 'Sci-Fi', id: '6', authorId:"3" },
 ];
 
 const authors: authorint[] = [
@@ -29,16 +32,7 @@ const authors: authorint[] = [
     { name: 'Terry Pratchett', age: 66, id: '3' },
 ];
 
-const authorType = new GraphQLObjectType({
-    name: 'Author',
-    fields: () => ({
-        id: {type: GraphQLString},
-        name:{type: GraphQLString},
-        age:{type: GraphQLInt}
-    })
-});
-
-const BookType = new GraphQLObjectType({
+const BookType:GraphQLObjectType = new GraphQLObjectType({
     name: 'Book',
     fields:() => ({
         id:{type: GraphQLString},
@@ -57,6 +51,29 @@ const BookType = new GraphQLObjectType({
         }
     })
 });
+
+const authorType:GraphQLObjectType = new GraphQLObjectType({
+    name: 'Author',
+    fields: () => ({
+        id: {type: GraphQLString},
+        name:{type: GraphQLString},
+        age:{type: GraphQLInt},
+        books: {
+            type: GraphQLList(BookType),
+            resolve(parent, args){
+                var booksByAuthor: bookint[] = [];
+                books.forEach(element => {
+                    if (element.authorId == parent.id){
+                        booksByAuthor.push(element);
+                    }
+                }) 
+                return booksByAuthor;
+            }
+        }
+    })
+});
+
+
 
 const RootQuery = new GraphQLObjectType({
     name:'RootQueryType',
