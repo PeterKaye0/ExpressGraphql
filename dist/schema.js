@@ -12,6 +12,19 @@ const books = [
     { name: 'The Final Empire', genre: 'Fantasy', id: '2' },
     { name: 'The Long Earth', genre: 'Sci-Fi', id: '3' },
 ];
+const authors = [
+    { name: 'Patfrick Rothfuss', age: 44, id: '1' },
+    { name: 'Brandon Sanderson', age: 42, id: '2' },
+    { name: 'Terry Pratchett', age: 66, id: '3' },
+];
+const authorType = new graphql_1.GraphQLObjectType({
+    name: 'Author',
+    fields: () => ({
+        id: { type: graphql_1.GraphQLString },
+        name: { type: graphql_1.GraphQLString },
+        age: { type: graphql_1.GraphQLInt }
+    })
+});
 const BookType = new graphql_1.GraphQLObjectType({
     name: 'Book',
     fields: () => ({
@@ -34,12 +47,30 @@ const RootQuery = new graphql_1.GraphQLObjectType({
                         match = element;
                     }
                 });
-                //if (!match){match= books[1];} 
+                return match;
+            }
+        },
+        author: {
+            type: authorType,
+            args: { id: { type: graphql_1.GraphQLString } },
+            resolve(parent, args) {
+                var match = { id: '', name: '', age: 0 };
+                authors.forEach(element => {
+                    if (element.id === args.id) {
+                        console.log(element);
+                        match = element;
+                    }
+                });
                 return match;
             }
         }
     }
 });
+/* const schema:GraphQLSchema = buildSchema(`
+    type: Query{
+        hello: String
+    }
+`) */
 const schema = new graphql_1.GraphQLSchema({ query: RootQuery });
 app.use("/graphql", (0, express_graphql_1.graphqlHTTP)({
     schema,
@@ -47,4 +78,3 @@ app.use("/graphql", (0, express_graphql_1.graphqlHTTP)({
 }));
 app.listen(4000);
 console.log("Running a GraphQL API server at http://localhost:4000/graphql");
-console.log();

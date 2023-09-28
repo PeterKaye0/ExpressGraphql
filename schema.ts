@@ -1,4 +1,4 @@
-import graphql, {GraphQLObjectType, GraphQLString, GraphQLSchema,buildSchema} from 'graphql'
+import graphql, {GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema,buildSchema} from 'graphql'
 import express, {Express, Request, Response} from 'express'
 import {graphqlHTTP} from 'express-graphql'
 
@@ -11,11 +11,31 @@ interface bookint {
     genre: string,
     id: string
 }
+interface authorint {
+    name: string,
+    age: number,
+    id: string
+}
 const books: bookint[] = [
     { name: 'Name of the Wind', genre: 'Fantasy', id: '1' },
     { name: 'The Final Empire', genre: 'Fantasy', id: '2' },
     { name: 'The Long Earth', genre: 'Sci-Fi', id: '3' },
 ];
+
+const authors: authorint[] = [
+    { name: 'Patfrick Rothfuss', age: 44, id: '1' },
+    { name: 'Brandon Sanderson', age: 42, id: '2' },
+    { name: 'Terry Pratchett', age: 66, id: '3' },
+];
+
+const authorType = new GraphQLObjectType({
+    name: 'Author',
+    fields: () => ({
+        id: {type: GraphQLString},
+        name:{type: GraphQLString},
+        age:{type: GraphQLInt}
+    })
+});
 
 const BookType = new GraphQLObjectType({
     name: 'Book',
@@ -35,6 +55,20 @@ const RootQuery = new GraphQLObjectType({
             resolve(parent,args){
                 var match:bookint={id:'',name:'',genre:''};
                 books.forEach(element => {
+                    if (element.id === args.id){
+                        console.log(element);
+                        match = element;
+                    }
+                }) 
+                return match;
+            }
+        },
+        author: {
+            type: authorType,
+            args:{id: {type: GraphQLString}},
+            resolve(parent,args){
+                var match:authorint={id:'',name:'',age:0};
+                authors.forEach(element => {
                     if (element.id === args.id){
                         console.log(element);
                         match = element;
